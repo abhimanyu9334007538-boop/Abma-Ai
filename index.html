@@ -3,67 +3,39 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover, interactive-widget=resizes-content">
-    <title>Abma AI | Final Supreme</title>
+    <title>Abma AI | Final Fix</title>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;700&family=Outfit:wght@300;400;600&display=swap');
-        
         :root { --glass: rgba(255, 255, 255, 0.04); --border: rgba(255, 255, 255, 0.15); }
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Outfit', sans-serif; -webkit-tap-highlight-color: transparent; }
-
-        html, body { 
-            height: 100%; width: 100%; overflow: hidden; 
-            background: #020617; position: fixed; 
-        }
-
+        html, body { height: 100%; width: 100%; overflow: hidden; background: #020617; position: fixed; }
         body {
             background-image: radial-gradient(circle at 20% 30%, #1e1b4b 0%, transparent 50%),
                               radial-gradient(circle at 80% 70%, #0f172a 0%, transparent 50%);
             display: flex; flex-direction: column;
         }
-
-        #start-screen {
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: #020617; z-index: 1000; display: flex; flex-direction: column;
-            justify-content: center; align-items: center; gap: 20px;
-        }
-
-        #wake-btn {
-            padding: 15px 40px; font-size: 1.2rem; border-radius: 30px;
-            background: white; color: black; border: none; cursor: pointer;
-            font-weight: 600; box-shadow: 0 0 20px rgba(255,255,255,0.2);
-        }
-
+        #start-screen { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #020617; z-index: 1000; display: flex; flex-direction: column; justify-content: center; align-items: center; gap: 20px; }
+        #wake-btn { padding: 15px 40px; font-size: 1.2rem; border-radius: 30px; background: white; color: black; border: none; cursor: pointer; font-weight: 600; }
         .console { flex: 1; display: none; flex-direction: column; width: 100%; height: 100%; background: var(--glass); backdrop-filter: blur(40px); -webkit-backdrop-filter: blur(40px); }
-
         .top-bar { padding: 10px 20px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border); background: rgba(0,0,0,0.5); height: 65px; }
         .brand h2 { font-family: 'Space Grotesk', sans-serif; font-size: 1.1rem; letter-spacing: 2px; color: white; }
         .watermark { font-size: 0.6rem; color: #94a3b8; text-transform: uppercase; }
-
         #chat-engine { flex: 1; overflow-y: auto; padding: 15px; display: flex; flex-direction: column; gap: 12px; }
         .bubble { max-width: 85%; padding: 12px 16px; border-radius: 18px; font-size: 0.95rem; line-height: 1.4; animation: popIn 0.3s ease; color: white; word-wrap: break-word; }
         .bot-bubble { background: rgba(255, 255, 255, 0.08); align-self: flex-start; border: 1px solid var(--border); border-bottom-left-radius: 4px; }
         .user-bubble { background: linear-gradient(135deg, #1d4ed8, #3b82f6); align-self: flex-end; border-bottom-right-radius: 4px; }
-
-        .input-deck { 
-            padding: 12px 15px; background: #020617; border-top: 1px solid var(--border); 
-            display: flex; gap: 10px; align-items: center;
-            padding-bottom: max(12px, env(safe-area-inset-bottom));
-        }
-
+        .input-deck { padding: 12px 15px; background: #020617; border-top: 1px solid var(--border); display: flex; gap: 10px; align-items: center; padding-bottom: max(12px, env(safe-area-inset-bottom)); }
         .input-container { flex: 1; background: rgba(255,255,255,0.06); border-radius: 25px; padding: 0 15px; border: 1px solid var(--border); display: flex; align-items: center; }
         input { width: 100%; height: 48px; background: transparent; border: none; color: white; outline: none; font-size: 16px; }
         .action-btn { width: 48px; height: 48px; background: white; border-radius: 50%; border: none; flex-shrink: 0; display: grid; place-items: center; }
-
         @keyframes popIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
     </style>
 </head>
 <body>
-
     <div id="start-screen">
-        <h2 style="font-family: 'Space Grotesk'; letter-spacing: 5px; color: white;">ABMA AI</h2>
+        <h2 style="font-family: 'Space Grotesk'; letter-spacing: 5px; color: white;">ABMA SYSTEM</h2>
         <button id="wake-btn">INITIALIZE</button>
     </div>
-
     <div class="console" id="main-console">
         <div class="top-bar">
             <div class="brand">
@@ -81,7 +53,8 @@
 
 <script>
     const API_KEY = "AIzaSyChXIkvfci1R6DAwPmE_FAebzvtbvH859o";
-    const API_URL = "https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent";
+    // Changed version to v1 and fixed model path
+    const API_URL = "https://generativelanguage.googleapis.com/v1/models/gemini-pro:generateContent";
 
     const chatEngine = document.getElementById('chat-engine');
     const userInput = document.getElementById('userInput');
@@ -124,16 +97,15 @@
             if (data.candidates && data.candidates[0].content) {
                 botBubble.innerText = data.candidates[0].content.parts[0].text;
             } else {
-                botBubble.innerText = "Error: " + (data.error ? data.error.message : "Kuch gadbad hai.");
+                botBubble.innerText = "Error: " + (data.error ? data.error.message : "API issue.");
             }
         } catch(e) { botBubble.innerText = "Network Error."; }
         chatEngine.scrollTop = chatEngine.scrollHeight;
     }
 
-    document.getElementById('sendBtn').onclick = handleChat;
+    sendBtn.onclick = handleChat;
     userInput.onkeypress = (e) => { if(e.key === 'Enter') handleChat(); };
 
-    // Scroll fix for keyboard
     if (window.visualViewport) {
         window.visualViewport.addEventListener('resize', () => {
             chatEngine.scrollTop = chatEngine.scrollHeight;
