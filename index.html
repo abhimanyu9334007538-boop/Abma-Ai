@@ -3,17 +3,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover, interactive-widget=resizes-content">
-    <title>Abma AI | Final Fix</title>
+    <title>Abma AI | Powered by OpenAI</title>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;700&family=Outfit:wght@300;400;600&display=swap');
         :root { --glass: rgba(255, 255, 255, 0.04); --border: rgba(255, 255, 255, 0.15); }
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Outfit', sans-serif; -webkit-tap-highlight-color: transparent; }
         html, body { height: 100%; width: 100%; overflow: hidden; background: #020617; position: fixed; }
-        body {
-            background-image: radial-gradient(circle at 20% 30%, #1e1b4b 0%, transparent 50%),
-                              radial-gradient(circle at 80% 70%, #0f172a 0%, transparent 50%);
-            display: flex; flex-direction: column;
-        }
+        body { background-image: radial-gradient(circle at 20% 30%, #1e1b4b 0%, transparent 50%), radial-gradient(circle at 80% 70%, #0f172a 0%, transparent 50%); display: flex; flex-direction: column; }
         #start-screen { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #020617; z-index: 1000; display: flex; flex-direction: column; justify-content: center; align-items: center; gap: 20px; }
         #wake-btn { padding: 15px 40px; font-size: 1.2rem; border-radius: 30px; background: white; color: black; border: none; cursor: pointer; font-weight: 600; }
         .console { flex: 1; display: none; flex-direction: column; width: 100%; height: 100%; background: var(--glass); backdrop-filter: blur(40px); -webkit-backdrop-filter: blur(40px); }
@@ -42,7 +38,7 @@
                 <h2>ABMA AI</h2>
                 <div class="watermark">design by Abhimanyu Singh</div>
             </div>
-            <div style="width: 8px; height: 8px; background: #4ade80; border-radius: 50%; box-shadow: 0 0 8px #4ade80;"></div>
+            <div style="width: 8px; height: 8px; background: #4ade80; border-radius: 50%;"></div>
         </div>
         <div id="chat-engine"></div>
         <div class="input-deck">
@@ -52,10 +48,6 @@
     </div>
 
 <script>
-    const API_KEY = "AIzaSyChXIkvfci1R6DAwPmE_FAebzvtbvH859o";
-    // Changed version to v1 and fixed model path
-    const API_URL = "https://generativelanguage.googleapis.com/v1/models/gemini-pro:generateContent";
-
     const chatEngine = document.getElementById('chat-engine');
     const userInput = document.getElementById('userInput');
 
@@ -79,38 +71,25 @@
 
         addBubble(msg, 'user-bubble');
         userInput.value = "";
-        
         const botBubble = document.createElement('div');
         botBubble.className = "bubble bot-bubble";
-        botBubble.innerText = "Sosh raha hoon...";
+        botBubble.innerText = "Processing...";
         chatEngine.appendChild(botBubble);
-        chatEngine.scrollTop = chatEngine.scrollHeight;
 
         try {
-            const response = await fetch(`${API_URL}?key=${API_KEY}`, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ contents: [{ parts: [{ text: msg }] }] })
+            // Vercel Backend Call
+            const res = await fetch("/api/chat", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ message: msg })
             });
-
-            const data = await response.json();
-            if (data.candidates && data.candidates[0].content) {
-                botBubble.innerText = data.candidates[0].content.parts[0].text;
-            } else {
-                botBubble.innerText = "Error: " + (data.error ? data.error.message : "API issue.");
-            }
-        } catch(e) { botBubble.innerText = "Network Error."; }
+            const data = await res.json();
+            botBubble.innerText = data.reply || "Error: " + data.error;
+        } catch(e) { botBubble.innerText = "Backend Connection Error."; }
         chatEngine.scrollTop = chatEngine.scrollHeight;
     }
-
-    sendBtn.onclick = handleChat;
+    document.getElementById('sendBtn').onclick = handleChat;
     userInput.onkeypress = (e) => { if(e.key === 'Enter') handleChat(); };
-
-    if (window.visualViewport) {
-        window.visualViewport.addEventListener('resize', () => {
-            chatEngine.scrollTop = chatEngine.scrollHeight;
-        });
-    }
 </script>
 </body>
 </html>
